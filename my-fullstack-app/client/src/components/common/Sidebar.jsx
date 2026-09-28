@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Layers,
@@ -12,11 +12,15 @@ import {
   Radio,
   BarChart3,
   Settings,
-  Landmark
+  Landmark,
+  IndianRupee,
+  AlertTriangle,
+  FileSpreadsheet
 } from 'lucide-react';
 import { SITE_NAME_SHORT } from '../../utils/constants';
+import { useAuth } from '../../context/AuthContext';
 
-const navItems = [
+const engineerNavItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/assets', label: 'Asset Registry', icon: Layers },
   { path: '/map', label: 'Infrastructure Map', icon: MapPin },
@@ -30,7 +34,21 @@ const navItems = [
   { path: '/settings', label: 'Settings & About', icon: Settings }
 ];
 
+const executiveNavItems = [
+  { path: '/executive', label: 'Executive Overview', icon: LayoutDashboard },
+  { path: '/executive/projects', label: 'Projects & Budget', icon: IndianRupee },
+  { path: '/executive/attention', label: 'Attention Required', icon: AlertTriangle },
+  { path: '/map', label: 'Infrastructure Map', icon: MapPin },
+  { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { path: '/settings', label: 'Settings & About', icon: Settings }
+];
+
 export default function Sidebar() {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  const isExecutive = user ? user.role === 'executive' : location.pathname.startsWith('/executive');
+  const navItems = isExecutive ? executiveNavItems : engineerNavItems;
   return (
     <aside
       style={{

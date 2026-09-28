@@ -40,7 +40,7 @@ import WorkOrderTable from '../components/maintenance/WorkOrderTable';
 import WorkOrderModal from '../components/maintenance/WorkOrderModal';
 
 import AssetMap from '../components/map/AssetMap';
-import { formatDate, formatCurrency } from '../utils/formatters';
+import { formatDate, formatCurrency, formatCurrencyCompact, formatCurrencyFull } from '../utils/formatters';
 import { STAGE_LABELS, HEALTH_DISCLAIMER } from '../utils/constants';
 
 export default function AssetPassport() {
@@ -400,6 +400,128 @@ export default function AssetPassport() {
                 </div>
               </div>
             </div>
+
+            {/* Executive View: Budget & Schedule Card */}
+            {(() => {
+              const approved = asset.approvedBudget > 0 ? asset.approvedBudget : (asset.estimatedCost || 0);
+              const spent = asset.amountSpent > 0 ? asset.amountSpent : (asset.actualCost || 0);
+              const variancePct = approved > 0 ? Number((((spent - approved) / approved) * 100).toFixed(1)) : 0;
+              const schedStatus = asset.scheduleStatus || 'ON_TRACK';
+              const expectedEnd = asset.expectedEndDate || asset.plannedEndDate;
+
+              // Derive reasons
+              const reasons = [];
+              if (asset.condition === 'CRITICAL') reasons.push('Structural condition is CRITICAL');
+              if (typeof asset.healthScore === 'number' && asset.healthScore < 40) reasons.push(`Health score is critically low (${Math.round(asset.healthScore)}/100)`);
+              if (variancePct > 15) reasons.push(`Budget overrun +${variancePct}% (>15%)`);
+              else if (variancePct >= 5) reasons.push(`Budget variance +${variancePct}% (5-15%)`);
+              if (schedStatus === 'DELAYED') reasons.push('Milestone delivery is DELAYED');
+              else if (schedStatus === 'AT_RISK') reasons.push('Schedule is flagged AT RISK');
+              if (asset.nextInspection && new Date(asset.nextInspection) < new Date()) {
+                const days = Math.floor((new Date() - new Date(asset.nextInspection)) / (1000 * 60 * 60 * 24));
+                if (days > 30) reasons.push(`Inspection overdue by ${days} days (>30d)`);
+                else if (days > 0) reasons.push(`Inspection overdue by ${days} days`);
+              }
+
+              let priority = 'OK';
+              if (asset.condition === 'CRITICAL' || asset.healthScore < 40 || variancePct > 15 || schedStatus === 'DELAYED' || reasons.some((r) => r.includes('>30d'))) {
+                priority = 'IMMEDIATE';
+              } else if (reasons.length > 0) {
+                priority = 'WATCH';
+              }
+
+              let badgeBg = '#E8F5E9';
+              let badgeColor = 'var(--good)';
+              let badgeBorder = '#C8E6C9';
+              if (priority === 'IMMEDIATE') {
+                badgeBg = '#FEE2E2';
+                badgeColor = 'var(--critical)';
+                badgeBorder = '#FECACA';
+              } else if (priority === 'WATCH') {
+                badgeBg = '#FEF3C7';
+                badgeColor = 'var(--fair)';
+                badgeBorder = '#FDE68A';
+              }
+
+              return (
+                <div className="card" style={{ margin: 0, borderLeft: `4px solid ${badgeColor}` }}>
+                  <div className="card-header" style={{ paddingBottom: '8px', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 className="card-title">Budget & Schedule Overview (Executive Telemetry)</h4>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          backgroundColor: badgeBg,
+                          color: badgeColor,
+                          border: `1px solid ${badgeBorder}`,
+                          padding: '2px 8px',
+                          borderRadius: 'var(--radius)',
+                          textTransform: 'uppercase'
+                        }}
+                      >
+                        {priority === 'OK' ? 'STATUS: OK' : `ATTENTION: ${priority}`}
+                      </span>
+                    </div>
+                    {schedStatus && (
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          color: schedStatus === 'DELAYED' ? 'var(--critical)' : (schedStatus === 'AT_RISK' ? 'var(--fair)' : 'var(--good)')
+                        }}
+                      >
+                        Schedule: {schedStatus.replace('_', ' ')}
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', fontSize: '13px' }}>
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Approved Budget:</div>
+                      <strong style={{ color: 'var(--navy-900)' }} title={formatCurrencyFull(approved)}>
+                        {formatCurrencyCompact(approved)}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Amount Spent:</div>
+                      <strong style={{ color: 'var(--navy-900)' }} title={formatCurrencyFull(spent)}>
+                        {formatCurrencyCompact(spent)}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Budget Variance:</div>
+                      <strong style={{ color: variancePct > 0 ? 'var(--critical)' : (variancePct < 0 ? 'var(--good)' : 'var(--text)') }}>
+                        {variancePct > 0 ? `+${variancePct}%` : `${variancePct}%`}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Schedule Milestone:</div>
+                      <strong style={{ color: schedStatus === 'DELAYED' ? 'var(--critical)' : 'var(--navy-900)' }}>
+                        {schedStatus.replace('_', ' ')}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Expected End Date:</div>
+                      <strong style={{ color: 'var(--navy-900)' }}>
+                        {formatDate(expectedEnd)}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {reasons.length > 0 && (
+                    <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border)', fontSize: '12px' }}>
+                      <span style={{ fontWeight: 600, color: badgeColor }}>Active Attention Triggers: </span>
+                      <span style={{ color: 'var(--text)' }}>{reasons.join(' • ')}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Asset Specific Technical Specs */}
             {asset.specs && Object.keys(asset.specs).length > 0 && (

@@ -44,13 +44,39 @@ export function formatDateTime(dateString) {
   }
 }
 
-export function formatCurrency(amount) {
+export function formatCurrencyFull(amount) {
   if (amount === undefined || amount === null || isNaN(amount)) return '₹0';
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
     maximumFractionDigits: 0
   }).format(amount);
+}
+
+export function formatCurrencyCompact(amount) {
+  if (amount === undefined || amount === null || isNaN(amount)) return '₹0';
+  const val = Number(amount);
+  const abs = Math.abs(val);
+  const sign = val < 0 ? '-' : '';
+
+  if (abs >= 10000000) {
+    // 1 Crore = 10,000,000
+    const cr = abs / 10000000;
+    return `${sign}₹${cr >= 100 ? cr.toFixed(0) : cr.toFixed(1).replace(/\.0$/, '')} Cr`;
+  }
+  if (abs >= 100000) {
+    // 1 Lakh = 100,000
+    const lk = abs / 100000;
+    return `${sign}₹${lk >= 100 ? lk.toFixed(0) : lk.toFixed(1).replace(/\.0$/, '')} L`;
+  }
+  return formatCurrencyFull(amount);
+}
+
+export function formatCurrency(amount, compact = false) {
+  if (compact) {
+    return formatCurrencyCompact(amount);
+  }
+  return formatCurrencyFull(amount);
 }
 
 export function getHealthBand(score) {

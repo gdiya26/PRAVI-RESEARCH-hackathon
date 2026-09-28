@@ -7,6 +7,7 @@ const maintenanceRoutes = require('./maintenance.routes');
 const workOrderRoutes = require('./workOrder.routes');
 const dashboardRoutes = require('./dashboard.routes');
 const analyticsRoutes = require('./analytics.routes');
+const executiveRoutes = require('./executive.routes');
 const assetController = require('../controllers/asset.controller');
 
 router.use('/assets', assetRoutes);
@@ -15,6 +16,7 @@ router.use('/maintenance', maintenanceRoutes);
 router.use('/work-orders', workOrderRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/executive', executiveRoutes);
 
 // Direct traffic-assets endpoint
 router.get('/traffic-assets', assetController.getTrafficAssets);

@@ -107,6 +107,36 @@ const AssetSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    // Executive View Budget & Schedule extensions
+    approvedBudget: {
+      type: Number,
+      default: 0
+    },
+    amountSpent: {
+      type: Number,
+      default: 0
+    },
+    plannedStartDate: {
+      type: Date,
+      default: null
+    },
+    plannedEndDate: {
+      type: Date,
+      default: null
+    },
+    expectedEndDate: {
+      type: Date,
+      default: null
+    },
+    projectName: {
+      type: String,
+      default: ''
+    },
+    scheduleStatus: {
+      type: String,
+      enum: ['ON_TRACK', 'AT_RISK', 'DELAYED'],
+      default: 'ON_TRACK'
+    },
     department: {
       type: String,
       default: 'Public Works Department (PWD)'

@@ -1,8 +1,11 @@
 import React from 'react';
-import { ShieldCheck, Database, Building2 } from 'lucide-react';
-import { SITE_NAME, TAGLINE } from '../../utils/constants';
+import { Link } from 'react-router-dom';
+import { Building2, LogOut, UserCheck } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Header() {
+  const { user, logout } = useAuth();
+
   return (
     <header
       style={{
@@ -75,43 +78,57 @@ export default function Header() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            padding: '4px 10px',
-            borderRadius: 'var(--radius)',
-            fontSize: '12px',
-            fontWeight: 600,
-            border: '1px solid rgba(255, 255, 255, 0.2)'
-          }}
-        >
-          <span
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        {/* User Status / Account Indicator */}
+        {user ? (
+          <div
             style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#10B981',
-              display: 'inline-block'
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              padding: '3px 10px',
+              borderRadius: 'var(--radius)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
             }}
-          />
-          <span style={{ color: '#FFFFFF' }}>Demo</span>
-        </div>
-
-        <div
-          style={{
-            fontSize: '11px',
-            color: 'var(--navy-100)',
-            textAlign: 'right',
-            lineHeight: 1.3
-          }}
-        >
-          <div style={{ fontWeight: 600, color: '#FFFFFF' }}>Government of Gujarat</div>
-          <div>Roads & Buildings Department</div>
-        </div>
+          >
+            <UserCheck size={14} color="var(--accent-gold)" />
+            <div style={{ fontSize: '11px', lineHeight: 1.2, textAlign: 'left' }}>
+              <div style={{ fontWeight: 700, color: '#FFFFFF' }}>{user.name}</div>
+              <div style={{ color: 'var(--navy-100)', fontSize: '10px' }}>{user.title}</div>
+            </div>
+            <button
+              type="button"
+              onClick={logout}
+              className="btn btn-secondary btn-sm"
+              style={{
+                padding: '2px 6px',
+                fontSize: '11px',
+                marginLeft: '4px',
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                color: '#FFFFFF',
+                borderColor: 'transparent'
+              }}
+              title="Sign out of portal"
+            >
+              <LogOut size={12} />
+              <span>Logout</span>
+            </button>
+          </div>
+        ) : (
+          <Link
+            to="/login"
+            className="btn btn-secondary btn-sm"
+            style={{
+              backgroundColor: 'var(--accent-gold)',
+              color: 'var(--navy-900)',
+              borderColor: 'var(--accent-gold)',
+              fontWeight: 700
+            }}
+          >
+            Sign In
+          </Link>
+        )}
       </div>
     </header>
   );

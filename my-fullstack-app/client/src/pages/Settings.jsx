@@ -103,6 +103,84 @@ export default function Settings() {
         </div>
       </div>
 
+      {/* Dual Perspective: Engineer View vs Executive View */}
+      <div className="card" style={{ margin: 0 }}>
+        <div className="card-header">
+          <h3 className="card-title">Dual-Perspective Governance: Engineer View vs. Executive View</h3>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+          <div style={{ backgroundColor: 'var(--bg)', padding: '14px', borderRadius: 'var(--radius)', border: '1px solid var(--border)', borderTop: '3px solid var(--navy-700)' }}>
+            <h4 style={{ margin: '0 0 6px', fontSize: '14px', color: 'var(--navy-900)' }}>
+              1. Engineer View (Technical & Operational)
+            </h4>
+            <p style={{ fontSize: '12px', color: 'var(--text)', lineHeight: 1.5, margin: 0 }}>
+              Tailored for field inspection engineers, district project managers, and maintenance contractors. Focuses on technical condition assessments, IRC defect catalogs (potholes, cracking, corrosion, structural spalling), work order scheduling, and lifecycle state advancements.
+            </p>
+          </div>
+
+          <div style={{ backgroundColor: 'var(--bg)', padding: '14px', borderRadius: 'var(--radius)', border: '1px solid var(--border)', borderTop: '3px solid var(--accent-gold)' }}>
+            <h4 style={{ margin: '0 0 6px', fontSize: '14px', color: 'var(--navy-900)' }}>
+              2. Executive View (Decision Support & Capital Oversight)
+            </h4>
+            <p style={{ fontSize: '12px', color: 'var(--text)', lineHeight: 1.5, margin: 0 }}>
+              Designed for Department Secretaries, Principal Secretaries, and Cabinet stakeholders. Summarizes portfolio capital allocation (₹150-250 Cr), contract expenditure, budget variances, schedule milestone risks, and surfaces immediate intervention flags without technical clutter.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Executive Attention & Escalation Governance Rules */}
+      <div className="card" style={{ margin: 0 }}>
+        <div className="card-header">
+          <h3 className="card-title">Executive Attention & Escalation Governance Rules</h3>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Configured in server/src/utils/executiveRules.js</span>
+        </div>
+        <div className="table-container" style={{ border: 'none' }}>
+          <table className="dense-table">
+            <thead>
+              <tr>
+                <th style={{ width: '130px' }}>Priority Level</th>
+                <th>Trigger Criteria & Thresholds</th>
+                <th>Standard Executive Action Protocol</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span className="badge badge-critical">IMMEDIATE</span>
+                </td>
+                <td style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                  &bull; Structural condition is <strong>CRITICAL</strong><br />
+                  &bull; Health score below <strong>40/100</strong><br />
+                  &bull; Mandatory safety inspection overdue by <strong>&gt; 30 days</strong><br />
+                  &bull; Budget variance exceeds <strong>&gt; 15% overrun</strong><br />
+                  &bull; Delivery schedule delayed by <strong>&gt; 60 days</strong><br />
+                  &bull; <strong>URGENT</strong> priority maintenance pending without scheduled work order
+                </td>
+                <td style={{ fontSize: '12px', color: 'var(--text)' }}>
+                  Immediate ministerial intervention, discretionary outlay freeze, contractor performance review, emergency repair fund sanction.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span className="badge badge-fair">WATCH</span>
+                </td>
+                <td style={{ fontSize: '12px', lineHeight: 1.5 }}>
+                  &bull; Structural condition is <strong>POOR</strong><br />
+                  &bull; Health score in attention bracket (<strong>40-54</strong>)<br />
+                  &bull; Budget variance elevated at <strong>5-15%</strong><br />
+                  &bull; Inspection overdue by <strong>1-30 days</strong><br />
+                  &bull; Project milestone schedule flagged <strong>AT RISK</strong>
+                </td>
+                <td style={{ fontSize: '12px', color: 'var(--text)' }}>
+                  Bi-weekly progress monitoring in executive review, bill of quantities audit, catch-up work plan request from site engineers.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Health Score Methodology & Weight Distribution */}
       <div className="card" style={{ margin: 0 }}>
         <div className="card-header">
